@@ -54,7 +54,11 @@
           <!-- Begin content area --> 
 
           <div class="expanded row margin-top-20">
-
+			<div class="large-6 columns">
+				<label>Choose Your Favorite</label>
+				<input type="radio" name="opcao" value="Cadastro" id="pokemonRed"><label for="pokemonRed">Red</label>
+				<input type="radio" name="opcao" value="Consulta" id="pokemonBlue"><label for="pokemonBlue">Blue</label>
+			</div>
             <div class="columns large-12">        
             <h3>Cadastro de Unidades</h3>
             </div> 

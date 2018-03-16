@@ -1,11 +1,8 @@
 <?php
-
 namespace App;
-
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Controllers\IndexController; 
 use Session;
-
 class Produto extends Model
 {
     protected $fillable = array('nome','codTipoProduto');
@@ -17,7 +14,6 @@ class Produto extends Model
 	{
         return $this->belongsTo('App\TipoProduto','codTipoProduto');
     }
-
 	
 	public function ProdutosNota()
 	{
@@ -103,7 +99,7 @@ class Produto extends Model
 		
 		
 	
-	public static function visualizaDados($parameter,$combo)
+	public static function visualizaDados($id,$parameter,$combo)
 	{
 		$tipoP=\DB::table('tblproduto')
 				->select(\DB::raw('*'))
@@ -129,27 +125,39 @@ class Produto extends Model
 		{
 			if($parameter=='table')
 			{
-				if($combo==0)
-					$combo=1;
-				
-				$final=$combo*10;
-				$inicio=$final - 9;
-				
-				$produtos=Produto::where('id','>=',$inicio)->where('id','<=',$final)->limit(10)->get();
+				if(strlen($id)<=0)
+				{
+					if($combo==0)
+						$combo=1;
+					
+					$final=$combo*10;
+					$inicio=$final - 9;
+					$produto=Produto::where('id','>=',$inicio)->where('id','<=',$final)->limit(10)->get();
+				}
+				else
+				{
+					
+					if($combo==0)
+						$combo=1;
+					
+					$final=$combo*10;
+					$offset=($combo-1)*10;
+					$inicio=$final - 9;
+					$produto=Produto::where('nome','like','%'.$id.'%')->orWhere('codTipoProduto','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->limit(10)->offset($offset)->get();
+					
+				}
 				
 				$html="";
-				foreach ($produtos as $prod) 
-				{
-				
-					$html.="<tr>";
-					$html.="<td>".$prod->id."</td>";
-					$html.="<td>".$prod->nome."</td>";
-					$html.="<td>".$prod->codTipoProduto."</td>";
-					$html.="<td>X</td>";
-					$html.="</tr>";
-				
-				}
-				echo $html;
+					foreach ($produto as $fun) 
+					{
+						$html.="<tr>";
+						$html.="<td>".$fun->id."</td>";
+						$html.="<td>".$fun->nome."</td>";
+						$html.="<td>".$fun->cpf."</td>";
+						$html.="<td>Nada</td>";
+						$html.="</tr>";
+					}
+					echo $html;
 				
 			}
 			
@@ -159,14 +167,24 @@ class Produto extends Model
 			
 	}
 	
-	public static function Page($combo)
+	public static function Page($id,$combo)
 	{
+
 		if($combo==0)
 		{
 			$combo = 1;
 		}
-		$pagination=Produto::count();
-		$pagination/=10;
+		if(strlen($id)>0)
+		{
+			
+			$pagination=Produto::where('nome','like','%'.$id.'%')->orWhere('codTipoProduto','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->count();
+			$pagination/=10;
+		}
+		else
+		{
+			$pagination=Produto::count();
+			$pagination/=10;
+		}
 		if($pagination > 10)
 		{
 			if($combo>=1 && $combo<=5)
@@ -201,6 +219,7 @@ class Produto extends Model
 		}
 		else
 		{
+
 			$inicio=1;
 			$fim=ceil($pagination);
 		}
@@ -216,7 +235,7 @@ class Produto extends Model
 		{
 			$previous=$combo - 1;
 			$html.="<li class='pagination-first'><a href='#' onclick='loadProdutos(1)'>Primeiro</a></li>";
-			$html.="<li class='pagination-previous'><a href='#' onclick='loadProdutos(".$previous .")'>Anterior </a></li>";
+			$html.="<li class='pagination-previous'><a href='#' onclick='loadProdutos(".$previous .")'>Anterior</a></li>";
 			
 			
 		}
@@ -250,21 +269,20 @@ class Produto extends Model
 		}
 		if ($combo >=$pagination)
 		{
-			$html.="<li class='pagination-next disabled'>Proximo</li>";
+			$html.="<li class='pagination-next disabled'>Próximo</li>";
 			$html.="<li class='pagination-Last disabled'>Ultimo</li>";
 		}
 		else
 		{
 			$next=$combo + 1;
-			$html.="<li class='pagination-next'><a href='#' onclick='loadProdutos(".$next .")'>Proximo </a></li>";
-			$html.="<li class='pagination-last'><a href='#' onclick='loadProdutos(".ceil($pagination).")'>Ultimo </a></li>";
+			$html.="<li class='pagination-next'><a href='#' onclick='loadProdutos(".$next .")'>Próximo</a></li>";
+			$html.="<li class='pagination-last'><a href='#' onclick='loadProdutos(".ceil($pagination).")'>Ultimo</a></li>";
 		}
 		$html.=" </ul>";
 		$html.=" </nav>";
 		
 		echo $html;
+		
+		
 	}
 }
-		
-
-

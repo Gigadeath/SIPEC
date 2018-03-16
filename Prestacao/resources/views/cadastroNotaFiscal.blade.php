@@ -184,8 +184,8 @@
 	for(varCount=0;varCount<=startingNo;varCount++){
 		var displayCount = varCount+1;
 		$node = '<tr id="linha'+varCount+'" class="linha">\
-					<td><select id="produto'+varCount+'" name="produto[]" class="produto"  style="width:100%" required> </select></td> \
-					<td><select class="selectMed" id="codMedida'+varCount+'" name="codMedida[]" style="width:100%" required ></select></td>\
+					<td><select id="produto'+varCount+'" name="produto[]" class="produto"  style="width:100%" required> <?php echo ProdutoController::show(null,'combo',null); ?></select></td> \
+					<td><select class="selectMed" id="codMedida'+varCount+'" name="codMedida[]" style="width:100%" required ><?php echo MedidaController::show(null,'combo'); ?></select></td>\
 					<td><input type="number" min="1" name="qtde[]" id="qtde[]" onchange="SomaTotal()" class="qtde" required></td>\
 					<td><input type="text"  name="valorunit[]" id="valorunit[]" onchange="SomaTotal()" class="valor" required></td>\
 				</tr>';
@@ -282,8 +282,8 @@
 		if (verificaCampos()==true)
 		{
 			$node = '<tr id="linha'+varCount+'" class="linha">\
-						<td><select id="produto'+varCount+'" name="produto[]" class="produto"  style="width:100%" required> </select></td> \
-						<td><select class="selectMed" id="codMedida'+varCount+'" name="codMedida[]" style="width:100%" required ></select></td>\
+						<td><select id="produto'+varCount+'" name="produto[]" class="produto"  style="width:100%" required><?php echo ProdutoController::show(null,'combo',null); ?> </select></td> \
+						<td><select class="selectMed" id="codMedida'+varCount+'" name="codMedida[]" style="width:100%" required ><?php echo MedidaController::show(null,'combo'); ?></select></td>\
 						<td><input type="number" min="1"  class="qtde" name="qtde[]"  id="qtde[]" required></td>\
 						<td><input type="text" class="valor" name="valorunit[]" onchange="SomaTotal()" id="valorunit[]"  required></td>\
 						<td><a href="#" name="delete" class="alert button"  onchange="SomaTotal()" id="'+varCount+'" onclick="deleta('+varCount+')">X</a></td>\

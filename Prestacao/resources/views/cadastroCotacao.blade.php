@@ -263,7 +263,6 @@
 		numero[0] =  numero[0].split(/(?=(?:...)*$)/).join('.');
 		return numero.join(',');
 	}
-
 	
 	$('.qtde').change(function() {
 		SomaTotal();
@@ -349,16 +348,12 @@
        var dd  = this.getDate().toString();
        return yyyy + "-" + (mm[1]?mm:"0"+mm[0]) + "-" + (dd[1]?dd:"0"+dd[0]); // padding
     };
-
 		
 	$(document).ready(function() {
 			$('#fornecedor').select2();
 			$('.produto').select2();
 		});
 		
-
 		
 			</script>
           <!-- End content area -->
-    
-

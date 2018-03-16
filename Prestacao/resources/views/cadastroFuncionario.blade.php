@@ -70,7 +70,7 @@
 		</div>
 		<div class="columns large-12"> 
 			<label align="center">
-				<input type="search" name="search" placeholder="Search.."/>
+				<input type="search" id="search" name="search" onchange="loadFuncionarios(1)" placeholder="Search.."/>
 			</label>
 		</div>
 		
@@ -95,7 +95,7 @@
 		   <?php echo csrf_field()."<br>";?>
 		   <div class="expanded row margin-top-20">
 				<div class="columns large-4">  
-					<h4>Dados</h4><br>
+					<h4>Cadastro de Dados</h4><br>
 				</div>
 			
 				<div class="columns large-4">  
@@ -165,27 +165,43 @@
     </div>
 	
 	<script>
-	loadFuncionarios(0)
+	loadFuncionarios(1);
+	function isUndefined(x) {
+		return typeof x == "undefined";
+	}
+
 	function loadFuncionarios(page)
+	{	
+	var busca=$('#search').val();
+	if(  busca == '')
 	{
+		busca ='';
+	}
+	else
+	{
+		busca=$('#search').val();
+		
+	}
+		
 		$.ajax({
 			type: 'get',	
 			url: '<?php echo url('prestacao/public/ConFuncionario/table');  ?>',
-			data: { pagination: page},
+			data: { pagination: page,search: busca},
 			success: function (response) 	
 			{
 				$('#funcionarios').html(response);
 			}
 		});
-		
+			
 		$.ajax({
 			type: 'get',	
 			url: '<?php echo url('prestacao/public/ConFuncionario/page');  ?>',
-			data: { pagination: page},
-			success: function (response) 	
+			data: {search: busca, pagination: page },
+			success: function (response)
 			{
 				$('#row').html(response);
 			}
 		});
+		
 	}
 	</script>

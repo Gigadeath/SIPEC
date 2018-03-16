@@ -30,19 +30,19 @@ class FuncionarioController extends Controller
     {
        if ($parameter=='combo')
 	   {
-		   return Funcionario::visualizaDados($parameter,$combo);
+		   return Funcionario::visualizaDados($id,$parameter,$combo);
 	   }
 	   else
 	   {
 			if ($parameter=='table')
 			{
-				return Funcionario::visualizaDados($parameter,$combo);
+				return Funcionario::visualizaDados($id,$parameter,$combo);
 			}
 			else
 			{
 				if($parameter=='page')
 				{
-					return Funcionario::Page($combo);
+					return Funcionario::Page($id,$combo);
 				}
 			}
 	   }

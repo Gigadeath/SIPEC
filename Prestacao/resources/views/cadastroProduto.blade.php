@@ -1,4 +1,4 @@
-     <?php 
+ <?php 
 	use App\Http\Controllers\TipoProdutoController;
 	use App\Http\Controllers\ProdutoController;
 	use App\Http\Controllers\MedidaController;
@@ -75,7 +75,7 @@
 		</div>
 		<div class="columns large-12"> 
 			
-				<label align="center"><input type="search" name="search" placeholder="Insira o nome do produto" > </label><br>
+				<label align="center"><input type="search" id="search" onchange="loadProdutos(1)" name="search" placeholder="Insira o nome do produto" > </label><br>
 			
 		</div>
 		
@@ -160,13 +160,24 @@
 		});
 	</script>
 	<script> 
-	loadProdutos(0)
+	
+	loadProdutos(1);
 	function loadProdutos(page)
 	{
+		var busca=$('#search').val();
+	if(  busca == '')
+	{
+		busca ='';
+	}
+	else
+	{
+		busca=$('#search').val();
+		
+	}
 		$.ajax({
 			type: 'get',	
 			url: '<?php echo url('prestacao/public/ConProduto/table');  ?>',
-			data: { pagination: page},
+			data: { pagination: page,search: busca},
 			success: function (response) 	
 			{
 				$('#produtos').html(response);
@@ -176,7 +187,7 @@
 		$.ajax({
 			type: 'get',	
 			url: '<?php echo url('prestacao/public/ConProduto/page');  ?>',
-			data: { pagination: page},
+			data: {pagination: page,search: busca},
 			success: function (response) 	
 			{
 				$('#row').html(response);

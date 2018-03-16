@@ -62,7 +62,7 @@ class Funcionario extends Model
 			}
 	}
 	
-	public static function visualizaDados($parameter,$combo)
+	public static function visualizaDados($id,$parameter,$combo)
 	{
 		if ($parameter=='combo')
 		{
@@ -103,24 +103,39 @@ class Funcionario extends Model
 		{
 			if($parameter=='table')
 			{
-				if($combo==0)
-					$combo=1;
-				
-				$final=$combo*10;
-				$inicio=$final - 9;
-				$funcionario=Funcionario::where('id','>=',$inicio)->where('id','<=',$final)->limit(10)->get();
+				if(strlen($id)<=0)
+				{
+					if($combo==0)
+						$combo=1;
+					
+					$final=$combo*10;
+					$inicio=$final - 9;
+					$funcionario=Funcionario::where('id','>=',$inicio)->where('id','<=',$final)->limit(10)->get();
+				}
+				else
+				{
+					
+					if($combo==0)
+						$combo=1;
+					
+					$final=$combo*10;
+					$offset=($combo-1)*10;
+					$inicio=$final - 9;
+					$funcionario=Funcionario::where('nome','like','%'.$id.'%')->orWhere('cpf','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->limit(10)->offset($offset)->get();
+					
+				}
 				
 				$html="";
-				foreach ($funcionario as $fun) 
-				{
-					$html.="<tr>";
-					$html.="<td>".$fun->id."</td>";
-					$html.="<td>".$fun->nome."</td>";
-					$html.="<td>".$fun->cpf."</td>";
-					$html.="<td>Nada</td>";
-					$html.="</tr>";
-				}
-				echo $html;
+					foreach ($funcionario as $fun) 
+					{
+						$html.="<tr>";
+						$html.="<td>".$fun->id."</td>";
+						$html.="<td>".$fun->nome."</td>";
+						$html.="<td>".$fun->cpf."</td>";
+						$html.="<td>Nada</td>";
+						$html.="</tr>";
+					}
+					echo $html;
 				
 			}
 			
@@ -130,16 +145,27 @@ class Funcionario extends Model
 			
 	}
 	
-	public static function Page($combo)
+	public static function Page($id,$combo)
 	{
 		if($combo==0)
 		{
 			$combo = 1;
 		}
-		$pagination=Funcionario::count();
-		$pagination/=10;
+		if(strlen($id)>0)
+		{
+			
+			$pagination=Funcionario::where('nome','like','%'.$id.'%')->orWhere('cpf','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->count();
+			$pagination/=10;
+		}
+		else
+		{
+			$pagination=Funcionario::count();
+			$pagination/=10;
+			
+		}
 		if($pagination > 10)
 		{
+
 			if($combo>=1 && $combo<=5)
 			{
 				$inicio=1;
@@ -173,7 +199,7 @@ class Funcionario extends Model
 		else
 		{
 			$inicio=1;
-			$fim=$pagination;
+			$fim=ceil($pagination);
 		}
 		
 		$html="<nav aria-label='Pagination'>";

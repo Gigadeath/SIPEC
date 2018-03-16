@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Session;
 | Here is where you can register web routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
-|
+| 
 */
 
 Route::get('/', function () {
@@ -78,12 +78,12 @@ Route::get('prestacao/public/ConFuncionario', function () {
 });
 
 Route::get('prestacao/public/ConFuncionario/table', function () {
-	return FuncionarioController::show(null,'table',	$_GET['pagination']);
+	return FuncionarioController::show($_GET['search'],'table',	$_GET['pagination']);
 
 });
 
 Route::get('prestacao/public/ConFuncionario/page', function () {
-	return FuncionarioController::show(null,'page',	$_GET['pagination']);
+	return FuncionarioController::show($_GET['search'],'page',	$_GET['pagination']);
 });
 
 
@@ -92,6 +92,12 @@ Route::get('prestacao/public/ConMantenedora', function () {
 });
 Route::get('prestacao/public/ConDre', function () {
 	return IndexController::index(null);
+});
+Route::get('prestacao/public/ConDre/table', function () {
+	return ProdutoController::show($_GET['search'],'table',	$_GET['pagination']);
+});
+Route::get('prestacao/public/ConDre/page', function () {
+	return ProdutoController::show($_GET['search'],'page',	$_GET['pagination']);
 });
 Route::get('prestacao/public/ConUnidade', function () {
 	return IndexController::index(null);
@@ -107,15 +113,14 @@ Route::get('prestacao/public/ConFornecedor', function () {
 Route::get('prestacao/public/ConProduto', function () {
 	return IndexController::index(null);
 });
-
 Route::get('prestacao/public/ConProduto/table', function () {
-	return ProdutoController::show(null,'table',	$_GET['pagination']);
-
+	return ProdutoController::show($_GET['search'],'table',	$_GET['pagination']);
 });
-
 Route::get('prestacao/public/ConProduto/page', function () {
-	return ProdutoController::show(null,'page',	$_GET['pagination']);
+	return ProdutoController::show($_GET['search'],'page',	$_GET['pagination']);
 });
+
+
 
 Route::get('prestacao/public/ConMedida/combo', function () {
 	return  MedidaController::show(null,'combo');

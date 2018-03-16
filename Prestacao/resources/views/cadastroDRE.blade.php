@@ -51,10 +51,52 @@
           <div class="expanded row margin-top-20">
 
             <div class="columns large-12">        
-            <h1>Cadastro de DRE</h1>
+            <h1>DRE</h1>
             </div> 
 
           </div> 
+		  <div class="expanded row margin-top-20">
+				<div class="columns large-4">  
+					<h4>Consulta</h4><br>
+				</div>
+			
+				<div class="columns large-4">  
+				
+				</div>
+			
+				<div class="columns large-4">  
+				</div>
+			
+		</div>
+		<div class="columns large-12"> 
+			
+				<label align="center"><input type="search" id="search" onchange="loadDre(1)" name="search" placeholder="Insira o nome do produto" > </label><br>
+			
+		</div>
+		
+		<div class="columns large-12">
+			<table style="width:100%">
+				<thead>
+					<th>#</th>
+					<th>Nome</th>
+					<th>Tipo</th>
+					<th>Ações</th>
+				</thead>
+				<tbody id="dres">
+				
+				</tbody>
+			</table>
+		<div class="row" id="row">
+		
+		</div>
+		</div>
+			<div class="expanded row margin-top-20">
+
+            <div class="columns large-12">        
+            <h1>Cadastro de DRE</h1>
+            </div> 
+
+          </div> 		
 		  <form action="<?php echo url('prestacao/public/CadDre/create'); ?>" method ="POST">
 		   <?php echo csrf_field()."<br>";?>
 			<div class="expanded row margin-top-20">
@@ -122,6 +164,40 @@
 						<div class="columns large-4"></div>
 				
 				
-		 </form>
-          <!-- End content area -->
-    </div>
+		 </form> </div>
+		 <script> 
+         loadDre(1);
+	function loadProdutos(page)
+	{
+		var busca=$('#search').val();
+	if(  busca == '')
+	{
+		busca ='';
+	}
+	else
+	{
+		busca=$('#search').val();
+		
+	}
+		$.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConDre/table');  ?>',
+			data: { pagination: page,search: busca},
+			success: function (response) 	
+			{
+				$('#dres').html(response);
+			}
+		});
+		
+		$.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConDre/page');  ?>',
+			data: {pagination: page,search: busca},
+			success: function (response) 	
+			{
+				$('#row').html(response);
+			}
+		});
+	}
+	</script>
+   

@@ -1,4 +1,4 @@
-    <div class="medium-12 large-10 columns" id="main">        
+   <div class="medium-12 large-10 columns" id="main">        
 
         <!-- header -->
         

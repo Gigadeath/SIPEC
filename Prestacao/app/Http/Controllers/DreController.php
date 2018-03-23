@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Dre;
+use Illuminate\Support\Facades\Session;
 
 class DreController extends Controller
 {
@@ -15,9 +16,12 @@ class DreController extends Controller
     }
 
    
-    public static function create()
+    public static function create(Request $request)
     {
-       return Dre::cadastroDre($_POST); 
+		if ($request->ajax())
+		{
+			return Dre::cadastroDre($request->all(),null); 
+		}
     }
 
     
@@ -25,14 +29,38 @@ class DreController extends Controller
     {
         //
     }
-
+	
     
-    public static function show($id,$parameter,$combo)
+    public static function show(Request $request,$id,$parameter,$combo)
     {
-        if ($parameter=='combo')
-	   {
-		   return Dre::visualizaDados($combo);
-	   }
+		if ($request->ajax())
+		{
+			if ($parameter=='combo')
+			{
+				return Dre::visualizaDados($id,$parameter,$combo);
+			}
+			else
+			{
+				if ($parameter=='table')
+				{
+					return Dre::visualizaDados($id,$parameter,$combo);
+				}
+				else
+				{
+					if($parameter=='page')
+					{
+						return Dre::visualizaDados($id,$parameter,$combo);
+					}
+					else
+					{
+						if($parameter=='update')
+						{
+							return Dre::visualizaDados($id,$parameter,$combo);
+						}
+					}
+				}
+			}
+		}
     }
 
     
@@ -42,9 +70,13 @@ class DreController extends Controller
     }
 
     
-    public function update($id)
+    public static function update(Request $request,$id)
     {
-        //
+		if ($request->ajax())
+		{
+			Session::forget('Dre');
+			return Dre::cadastroDre($request->all(),$id);
+		}
     }
 
    

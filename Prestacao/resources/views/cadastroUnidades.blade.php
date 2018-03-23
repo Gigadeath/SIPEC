@@ -20,9 +20,7 @@
 
         <!-- Breadcrumb -->
 
-          <div class="expanded row" id="breadcrumb">
-            <div class="columns large-12 gray">Home <i class="fa fa-angle-right"></i> Page</div>
-          </div>
+          
 		 <?php
 			if(Session::has('success'))
 			{
@@ -54,17 +52,50 @@
           <!-- Begin content area --> 
 
           <div class="expanded row margin-top-20">
-			<div class="large-6 columns">
-				<label>Choose Your Favorite</label>
-				<input type="radio" name="opcao" value="Cadastro" id="pokemonRed"><label for="pokemonRed">Red</label>
-				<input type="radio" name="opcao" value="Consulta" id="pokemonBlue"><label for="pokemonBlue">Blue</label>
+		  <div class="columns large-12">        
+            <h2>Unidades</h2>
+            </div> 
+		 <div class="columns large-12">    
+				<div class="grid-x grid-padding-x">	
+					<fieldset class="fieldset">
+						<legend>Selecione uma Funcionalidade</legend>
+							<input type="radio" id="rdbConsulta" name="form" value="Consulta" checked><label for="rdbConsulta" >Consulta/Alteracao</label>
+							<input type="radio" id="rdbCadastro" name="form" value="Cadastra"><label for="rdbCadastro">Cadastro</label>
+					</fieldset>
+				</div>
 			</div>
+			<div class="expanded row margin-top-20" id="consulta">
+		<div class="columns large-12"> 
+			
+				<label align="center"><input type="search" id="search" onchange="loadUnidades(1)" name="search" > </label><br>
+			
+		</div>
+		
+		<div class="columns large-12">
+			<table style="width:100%">
+				<thead>
+					<th>#</th>
+					<th>Nome</th>
+					<th>EOL</th>
+					<th>INEP</th>
+					<th>CNPJ</th>
+				</thead>
+				<tbody id="unidades">
+				
+				</tbody>
+			</table>
+		<div class="row" id="row">
+		
+		</div>
+		</div>	
+		</div> 
+
+		  <form  method="POST" id="cadastro">
+		    <?php echo csrf_field()."<br>";?>
+			
             <div class="columns large-12">        
             <h3>Cadastro de Unidades</h3>
             </div> 
-          </div> 
-		  <form action="<?php echo url('prestacao/public/CadUnidade/create'); ?>" method="POST">
-		    <?php echo csrf_field()."<br>";?>
 			<div class="expanded row margin-top-20">
 			<div class="columns large-4">
 				<label>
@@ -99,16 +130,16 @@
 						<label>Mantenedor
 						<select id="mantenedora" name="mantenedor" <?php if(isset($dados)){echo "value='".$dados['mantenedor']."'";} ?> >
 							<?php
-							$valor= isset($dados['mantenedor']) ? $dados['mantenedor'] : null;
-								echo MantenedorController::show(null,'combo',null);
+							$valorMan= isset($dados['mantenedor']) ? $dados['mantenedor'] : null;
+								//echo MantenedorController::show(null,'combo',null);
 							?>
 						</select></label><br>	
 		
 						<br><label>Coordenador:
 						<select id ="coordenador" onchange="verifica();" name="coordenador" <?php if(isset($dados)){echo "value='".$dados['coordenador']."'";}?>>
 							<?php
-								$valor= isset($dados['coordenador']) ? $dados['coordenador'] : null;
-								echo FuncionarioController::show(null,'combo',$valor);
+								$valorC= isset($dados['coordenador']) ? $dados['coordenador'] : null;
+								//echo FuncionarioController::show(null,'combo',$valor);
 							?>
 						</select></label>
 			</div>
@@ -124,18 +155,18 @@
 				</label>
 				
 				<label>DRE:
-						<select id="dre" name="dre" <?php if(isset($dados)){echo "value='".$dados['dre']."'";}?>>
+						<select id="dre" name="dre" <?php if(isset($dados['dre'])){echo "value='".$dados['dre']."'";}?>>
 							<?php
-							$valor= isset($dados['dre']) ? $dados['dre'] : null;
-								echo DreController::show(null,'combo',$valor);
+							$valorDRE= isset($dados['dre']) ? $dados['dre'] : null;
+								//echo DreController::show(null,'combo',$valor);	
 							?>
 						</select></label><br><br>
 						
 				<label>Diretor:
 					<select id="diretor" onchange="verifica();" name="diretor" <?php if(isset($erro)==true && $erro=='1'){echo "style='border:1px solid red'";}?>>
 								<?php
-								$valor= isset($dados['diretor']) ? $dados['diretor'] : null;
-									echo FuncionarioController::show(null,'combo',$valor);
+								$valorD= isset($dados['diretor']) ? $dados['diretor'] : null;
+									//echo FuncionarioController::show(null,'combo',$valor);
 								?>
 					</select></label>
 						
@@ -185,20 +216,151 @@
 				<div class="columns large-4">
 				</div>
 					<div class="columns large-4">
-						<button type="submit" class="success button">Cadastrar</button>
+						<button type="button"  id="btnCadastra" class="success button">Cadastrar</button>
 						<button type="button" class="alert button">Cancelar</button> 
 					</div>
 						<div class="columns large-4"></div>
 		 </form>
+		 
+		 <form method ="POST" id="altera" >
+		   <?php echo csrf_field()."<br>";?>
+		   <div class="expanded row margin-top-20">
+				<div class="columns large-4">  
+					<h4>Alteracao de Dados</h4><br>
+				</div>
+			
+				<div class="columns large-4">  
+				</div>
+			
+				<div class="columns large-4">  
+				</div>
+			
+			</div>
+			<div class="expanded row margin-top-20" id="dadosAlterar">
+			
+			</div>
+			<div class="expanded row margin-top-20">
+				<div class="columns large-4">  
+					<button type="button" id="btnAltera" class="success button">Altera</button>
+					<button type="button" id="cancelaAlt" class="alert button">Cancelar</button>
+				</div>
+				<div class="columns large-4">  
+					
+				</div>
+				<div class="columns large-4"> 
+				</div>
+			</div>
+		</form>
           <!-- End content area -->
     </div>
+	<script> 
+	var aux=0;
+	$(document).ready(function() {
+                $("#rdbConsulta").click(Dados);
+                $("#rdbCadastro").click(Cadastro);
+				$("#cancelaAlt").click(cancelaAltera);
+                });
+				
+	$('#btnAltera').on('click', function(){
+		var verifica=1;
+		var contagem;
+		$("#altera").ajaxSubmit({url:'<?php echo url('prestacao/public/CadUnidade/update'); ?>',type:'post',error: function(xhr,textStatus,data) { alert("verifique os dados digitados: " +xhr.status); },success: function (data){alert("sucesso"); }});
+		location.reload();
+	});
+	
+	$('#btnCadastra').on('click', function(){
+		var verifica=1;
+		var contagem;
+		$("#cadastro").ajaxSubmit({url:'<?php echo url('prestacao/public/CadUnidade/create'); ?>',type:'post',error: function(xhr,textStatus,data) { alert("verifique os dados digitados: " +xhr.status); },success: function (data){alert("sucesso"); }});
+		location.reload();
+	});
+	
+	
+				
+	function edit(id){
+        $.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConUnidade/update');  ?>',
+			data: { id: id},
+			success: function (response) 	
+			{
+				$("#consulta").hide();
+				$("#altera").show();
+				$('#dadosAlterar').html(response);
+				$('#dadosAlterar').show();
+			}
+		});
+    }
+	
+		function cancelaAltera()
+	{
+		$('#dadosAlterar').hide();
+		$('#consulta').show();
+		
+	}
+	function Dados(){
+        $("#consulta").show();
+		$("#cadastro").hide();
+		$("#altera").hide();
+    }
+    function Cadastro()
+	{
+        $("#consulta").hide();
+		$("#cadastro").show();
+		$("#altera").hide();
+    }
+	
+	loadUnidades(1);
+	Dados(); 
+	function isUndefined(x) {
+		return typeof x == "undefined";
+	}
+
+	function loadUnidades(page)
+	{
+		var busca=$('#search').val();
+	if(  busca == '')
+	{
+		busca ='';
+	}
+	else
+	{
+		busca=$('#search').val();
+		
+	}
+		$.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConUnidade/table');  ?>',
+			data: { pagination: page,search: busca},
+			success: function (response) 	
+			{
+				$('#unidades').html(response);
+			}
+		});
+		
+		$.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConUnidade/page');  ?>',
+			data: {pagination: page,search: busca},
+			success: function (response) 	
+			{
+				$('#row').html(response);
+			}
+		});
+	}
+	</script>
 	
 	<script>
+		
 		$(document).ready(function() {
-			$('#mantenedor').select2();
+			$('#mantenedora').select2();
 			$('#coordenador').select2();
 			$('#diretor').select2();
 			$('#dre').select2();
+			loadFuncionario();
+			loadDRE();
+			loadMantenedor();
+			
 		});
 		function verifica() {
 		var combo1= document.getElementById("coordenador");
@@ -211,6 +373,59 @@
 			
 		}
 			
+		}
+		
+		function loadFuncionario()
+		{
+			
+			$.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConFuncionario/combo');  ?>',
+			data: {search: "", pagination:<?php echo "'".$valorC."'"; ?>  },
+			success: function (response)
+			{
+				$('#coordenador').html(response);
+			}
+		});
+		
+		$.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConFuncionario/combo');  ?>',
+			data: {search: "", pagination:<?php echo "'".$valorD."'"; ?>  },
+			success: function (response)
+			{
+				$('#diretor').html(response);
+			}
+		});
+		}
+			
+		
+		function loadDRE()
+		{
+			
+			$.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConDre/combo');  ?>',
+			data: {search: "", pagination:<?php echo "'".$valorDRE."'"; ?>  },
+			success: function (response)
+			{
+				$('#dre').html(response);
+			}
+			});
+		}
+		
+		function loadMantenedor()
+		{
+			
+			$.ajax({
+			type: 'get',	
+			url: '<?php echo url('prestacao/public/ConMantenedora/combo');  ?>',
+			data: {search: "", pagination:<?php echo "'".$valorMan."'"; ?>  },
+			success: function (response)
+			{
+				$('#mantenedora').html(response);
+			}
+			});
 		}
 		
 	</script>

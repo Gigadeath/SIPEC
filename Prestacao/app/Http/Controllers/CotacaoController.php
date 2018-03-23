@@ -16,8 +16,8 @@ class CotacaoController extends Controller
    
     public static function create()
     {
-      Cotacao::cadastroCotacao($_POST); 
-	  print_r($_POST);
+		Cotacao::cadastroCotacao($_POST); 
+		print_r($_POST);
     }
 
     

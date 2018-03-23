@@ -18,10 +18,10 @@ class MantenedorController extends Controller
     }
 
    
-    public static function create()
+    public static function create(Request $request)
     {
 		// chama para cadastro
-		return Mantenedor::cadastraMantenedor($_POST);
+		return Mantenedor::cadastraMantenedor($request->all(),null);
     }
 
     
@@ -36,11 +36,32 @@ class MantenedorController extends Controller
         //return back()->with('success', 'User created successfully.');
     }
 	   
-    public static function show($id,$parameter,$combo)// função em beta para visualizador de dados universal controlado pela indexController
+    public static function show(Request $request,$id,$parameter,$combo)// função em beta para visualizador de dados universal controlado pela indexController
     {
         if ($parameter=='combo')//verifica qual parametro de retorno
 		{
-			return Mantenedor::visualizaDados($combo);// retorna a função especifica de visualização
+			return Mantenedor::visualizaDados($id,$parameter,$combo);// retorna a função especifica de visualização
+		}
+		else
+		{
+			if ($parameter=='table')
+			{
+				return Mantenedor::visualizaDados($id,$parameter,$combo);
+			}
+			else
+			{
+				if($parameter=='page')
+				{
+					return Mantenedor::visualizaDados($id,$parameter,$combo);
+				}
+				else
+				{
+					if($parameter=='update')
+					{
+						return Mantenedor::visualizaDados($id,$parameter,$combo);
+					}
+				}
+			}
 		}
     }
 
@@ -51,9 +72,10 @@ class MantenedorController extends Controller
     }
 
     
-    public function update($id)
+    public static function update(Request $request,$id)
     {
-        //
+        Session::forget('Mantenedor');
+		return Mantenedor::cadastraMantenedor($request->all(),$id);
     }
 
    

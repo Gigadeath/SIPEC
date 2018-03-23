@@ -22,11 +22,12 @@ class TipoProduto extends Model
 		$tipoProduto-> save(); //inserindo dados na base  
 		return $tipoProduto; 
 	}
+	
 	public static function visualizaDados()
 	{
 		$tipo=\DB::table('tbltipoproduto')
-				->select(\DB::raw('*'))
-				->get();
+			->select(\DB::raw('*'))
+			->get();
 				
 		$html='<option value="0">Selecione...</option>';
 		
@@ -36,8 +37,6 @@ class TipoProduto extends Model
 			$html.='<option value="'.$tipo->id.'">'.$tipo->tipo.'</option>';
 		}
 		return $html;
-		
-		
 	}
 }
 

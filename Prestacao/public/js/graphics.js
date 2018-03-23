@@ -1,7 +1,6 @@
 
 $(document).ready(function(){
 
-  $(document).foundation();
 
   var flot1 = function () {
         var data = [[0, 65], [1, 59], [2, 80], [3, 81], [4, 56], [5, 55], [6, 40]];

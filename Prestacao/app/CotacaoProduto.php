@@ -31,31 +31,31 @@ class CotacaoProduto extends Model
 		\DB::beginTransaction();
 		for($count =0;isset($dados['codProduto'][$count])==true;$count++)
 		{
-							$produto=\DB::table('tblproduto')
-							->select(\DB::raw('count(*) as contador'))
-							->where('id','=',isset($dados['codProduto'])==true ? $dados['codProduto'] : null)
-							->value('contador');
+			$produto=\DB::table('tblproduto')
+				->select(\DB::raw('count(*) as contador'))
+				->where('id','=',isset($dados['codProduto'])==true ? $dados['codProduto'] : null)
+				->value('contador');
 									
 									
-										Try
-										{
-											// atribuindo os dados nos atributos 
-											$cotacaoProduto = new CotacaoProduto(); 
-											$cotacaoProduto->qtde = $dados['qtde'][$count];
-											$cotacaoProduto->valorUnit = $dados['valorunit'][$count];
-											$cotacaoProduto->Data_Limite =$dados['Data_Limite'][$count];
-											$medida=Medida::find($dados['codMedida'][$count])->id;
-											$cotacaoProduto->Medida()->associate($medida);
-											$produto=Produto::find($dados['codProduto'][$count])->id;
-											$cotacaoProduto->Produto()->associate($produto);
-											$cotacao=Cotacao::find($id)->id;
-											$cotacaoProduto->Cotacao()->associate($cotacao);
-											$cotacaoProduto-> save(); //inserindo dados na base
-										}catch(\Error $e)
-										{
-											\DB::rollBack();
-											return false;
-										}
+			Try
+			{
+				// atribuindo os dados nos atributos 
+				$cotacaoProduto = new CotacaoProduto(); 
+				$cotacaoProduto->qtde = $dados['qtde'][$count];
+				$cotacaoProduto->valorUnit = $dados['valorunit'][$count];
+				$cotacaoProduto->Data_Limite =$dados['Data_Limite'][$count];
+				$medida=Medida::find($dados['codMedida'][$count])->id;
+				$cotacaoProduto->Medida()->associate($medida);
+				$produto=Produto::find($dados['codProduto'][$count])->id;
+				$cotacaoProduto->Produto()->associate($produto);
+				$cotacao=Cotacao::find($id)->id;
+				$cotacaoProduto->Cotacao()->associate($cotacao);
+				$cotacaoProduto-> save(); //inserindo dados na base
+			}catch(\Error $e)
+			{
+				\DB::rollBack();
+				return false;
+			}
 									
 		}
 		

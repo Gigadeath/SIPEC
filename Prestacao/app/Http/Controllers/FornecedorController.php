@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Fornecedor;
+use Session;
 
 class FornecedorController extends Controller
 {
@@ -15,9 +16,9 @@ class FornecedorController extends Controller
     }
 
    
-    public static function create()
+    public static function create(Request $request)
     {
-		return Fornecedor::cadastraFornecedor($_POST);
+		return Fornecedor::cadastraFornecedor($request->all(),null);
     }
 
     
@@ -27,12 +28,34 @@ class FornecedorController extends Controller
     }
 
     
-    public static function show($parameter,$combo)
-    {
-        if ($combo=='combo')
+    public static function show(Request $request,$id,$parameter,$combo)
+    {	
+	
+       if ($parameter=='combo')
 	   {
-		   return Fornecedor::visualizaDados($combo);
+		   return Fornecedor::visualizaDados($id,$parameter,$combo);
 	   }
+	   else
+		{
+			if ($parameter=='table')
+			{
+				return Fornecedor::visualizaDados($id,$parameter,$combo);
+			}
+			else
+			{
+				if($parameter=='page')
+				{
+					return Fornecedor::visualizaDados($id,$parameter,$combo);
+				}
+				else
+				{
+					if($parameter=='update')
+					{
+						return Fornecedor::visualizaDados($id,$parameter,$combo);
+					}
+				}
+			}
+		}
     }
 
     
@@ -42,9 +65,10 @@ class FornecedorController extends Controller
     }
 
     
-    public function update($id)
+    public static function update(Request $request,$id)
     {
-        //
+        Session::forget('Fornecedor');
+		return Fornecedor::cadastraFornecedor($request->all(),$id);
     }
 
    
@@ -53,3 +77,4 @@ class FornecedorController extends Controller
         //
     }
 }
+

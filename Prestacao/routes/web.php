@@ -13,6 +13,7 @@ use App\Http\Controllers\LancamentoController;
 use App\Http\Controllers\CotacaoController;
 use App\Http\Controllers\NotaFiscalController;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,9 +42,13 @@ Route::get('prestacao/public/sipec', function () {
 Route::get('prestacao/public/CadFuncionario', function () {
 	return IndexController::index(null);
 });
+
+
 Route::get('prestacao/public/CadMantenedora', function () {
 	return IndexController::index(null);
 });
+
+
 Route::get('prestacao/public/CadDre', function () {
 	return IndexController::index(null);
 });
@@ -77,30 +82,80 @@ Route::get('prestacao/public/ConFuncionario', function () {
 	return IndexController::index(null);
 });
 
-Route::get('prestacao/public/ConFuncionario/table', function () {
-	return FuncionarioController::show($_GET['search'],'table',	$_GET['pagination']);
+Route::get('prestacao/public/ConFuncionario/table', function (Request $request) {
+	return FuncionarioController::show($request,$_GET['search'],'table',	$_GET['pagination']);
 
 });
 
-Route::get('prestacao/public/ConFuncionario/page', function () {
-	return FuncionarioController::show($_GET['search'],'page',	$_GET['pagination']);
+Route::get('prestacao/public/ConFuncionario/combo', function (Request $request) {
+
+	return FuncionarioController::show($request,$_GET['search'],'combo',$_GET['pagination']);
+});
+
+Route::get('prestacao/public/ConFuncionario/page', function (Request $request) {
+
+	return FuncionarioController::show($request,$request->search,'page',$request->pagination);
+});
+
+Route::get('prestacao/public/ConFuncionario/update', function (Request $request) {
+	return FuncionarioController::show($request,$_GET['id'],'update',null);
 });
 
 
 Route::get('prestacao/public/ConMantenedora', function () {
 	return IndexController::index(null);
 });
+
+Route::get('prestacao/public/ConMantenedora/combo', function (Request $request) {
+	return MantenedorController::show($request,$_GET['search'],'combo',$_GET['pagination']);
+});
+Route::get('prestacao/public/ConMantenedora/table', function (Request $request) {
+	return MantenedorController::show($request,$_GET['search'],'table',$_GET['pagination']);
+});
+
+Route::get('prestacao/public/ConMantenedora/page', function (Request $request) {
+	return MantenedorController::show($request,$_GET['search'],'page',$_GET['pagination']);
+});
+
+Route::get('prestacao/public/ConMantenedora/update', function (Request $request) {
+	return MantenedorController::show($request,$_GET['id'],'update',null);
+});
+
 Route::get('prestacao/public/ConDre', function () {
 	return IndexController::index(null);
 });
-Route::get('prestacao/public/ConDre/table', function () {
-	return ProdutoController::show($_GET['search'],'table',	$_GET['pagination']);
+Route::get('prestacao/public/ConDre/table', function (Request $request) {
+	return DreController::show($request,$_GET['search'],'table',	$_GET['pagination']);
 });
-Route::get('prestacao/public/ConDre/page', function () {
-	return ProdutoController::show($_GET['search'],'page',	$_GET['pagination']);
+Route::get('prestacao/public/ConDre/page', function (Request $request) {
+	return DreController::show($request,$_GET['search'],'page',	$_GET['pagination']);
+});
+
+Route::get('prestacao/public/ConDre/combo', function (Request $request) {
+	return DreController::show($request,$_GET['search'],'combo',$_GET['pagination']);
+});
+
+Route::get('prestacao/public/ConDre/update', function (Request $request) {
+	return DreController::show($request,$_GET['id'],'update',null);
 });
 Route::get('prestacao/public/ConUnidade', function () {
 	return IndexController::index(null);
+});
+Route::get('prestacao/public/ConUnidade/table', function (Request $request) {
+	return UnidadeController::show($request,$_GET['search'],'table',	$_GET['pagination']);
+
+});
+
+Route::get('prestacao/public/ConUnidade/combo', function (Request $request) {
+	return UnidadeController::show($request,$_GET['search'],'combo',$_GET['pagination']);
+});
+
+Route::get('prestacao/public/ConUnidade/page', function (Request $request) {
+	return UnidadeController::show($request,$request->search,'page',$request->pagination);
+});
+
+Route::get('prestacao/public/ConUnidade/update', function (Request $request) {
+	return UnidadeController::show($request,$_GET['id'],'update',null);
 });
 Route::get('prestacao/public/ConLancamento', function () {
 	return IndexController::index(null);
@@ -109,15 +164,36 @@ Route::get('prestacao/public/ConFornecedor', function () {
 	return IndexController::index(null);
 });
 
+Route::get('prestacao/public/ConFornecedor/table', function (Request $request) {
+	return FornecedorController::show($request,$_GET['search'],'table',	$_GET['pagination']);
+});
+Route::get('prestacao/public/ConFornecedor/page', function (Request $request) {
+	return FornecedorController::show($request,$_GET['search'],'page',	$_GET['pagination']);
+});
 
-Route::get('prestacao/public/ConProduto', function () {
-	return IndexController::index(null);
+Route::get('prestacao/public/ConFornecedor/combo', function (Request $request) {
+	return FornecedorController::show($request,$_GET['search'],'combo',$_GET['pagination']);
 });
-Route::get('prestacao/public/ConProduto/table', function () {
-	return ProdutoController::show($_GET['search'],'table',	$_GET['pagination']);
+
+Route::get('prestacao/public/ConFornecedor/update', function (Request $request) {
+	return FornecedorController::show($request,$_GET['id'],'update',null);
 });
-Route::get('prestacao/public/ConProduto/page', function () {
-	return ProdutoController::show($_GET['search'],'page',	$_GET['pagination']);
+
+Route::get('prestacao/public/ConProduto/table', function (Request $request) {
+	return ProdutoController::show($request,$_GET['search'],'table',	$_GET['pagination']);
+
+});
+Route::get('prestacao/public/ConProduto/combo', function (Request $request) {
+	return ProdutoController::show($request,$_GET['search'],'combo',$_GET['pagination']);
+
+});
+
+Route::get('prestacao/public/ConProduto/page', function (Request $request) {
+	return ProdutoController::show($request,$_GET['search'],'page',	$_GET['pagination']);
+});
+
+Route::get('prestacao/public/ConProduto/update', function (Request $request) {
+	return ProdutoController::show($request,$_GET['id'],'update',null);
 });
 
 
@@ -146,26 +222,59 @@ Route::get('prestacao/public/RelatorioLancamento',function () {
 	return IndexController::index(null);
 });
 
-Route::post('prestacao/public/CadMantenedora/create', function () {
-	 return MantenedorController::create();
+Route::post('prestacao/public/CadMantenedora/create', function (Request $request) {
+	 return MantenedorController::create($request);
 });
 
-Route::post('prestacao/public/CadFornecedor/create', function () {
-	 return FornecedorController::create();
-});
-Route::post('prestacao/public/CadDre/create', function () {
-	 return DreController::create();
-});
-Route::post('prestacao/public/CadFuncionario/create', function () {
-	 return FuncionarioController::create();
-});
-Route::post('prestacao/public/CadProduto/create', function () {
-	 return ProdutoController::create();
+
+Route::post('prestacao/public/CadMantenedora/update', function (Request $request) {
+	 return MantenedorController::update($request,Session::get('Mantenedor'));
 });
 
-Route::post('prestacao/public/CadUnidade/create', function () {
-	 return UnidadeController::create();
+
+Route::post('prestacao/public/CadFornecedor/create', function (Request $request) {
+	 return FornecedorController::create($request);
 });
+
+Route::post('prestacao/public/CadFornecedor/update', function (Request $request) {
+	 return FornecedorController::update($request,Session::get('Fornecedor'));
+});
+
+Route::post('prestacao/public/CadDre/create', function (Request $request) {
+	 return DreController::create($request);
+});
+
+Route::post('prestacao/public/CadDre/update', function (Request $request) {
+	 return DreController::update($request,Session::get('Dre'));
+});
+
+
+Route::post('prestacao/public/CadFuncionario/create', function (Request $request) {
+	 return FuncionarioController::create($request);
+});
+
+Route::post('prestacao/public/CadFuncionario/update', function (Request $request) {
+	 return FuncionarioController::update($request,Session::get('Funcionario'));
+});
+
+Route::post('prestacao/public/CadProduto/create', function (Request $request) {
+	 return ProdutoController::create($request);
+});
+
+Route::post('prestacao/public/CadProduto/update', function (Request $request) {
+	 return ProdutoController::update($request,Session::get('Produto'));
+});
+
+
+
+Route::post('prestacao/public/CadUnidade/create', function (Request $request) {
+	 return UnidadeController::create($request);
+});
+
+Route::post('prestacao/public/CadUnidade/update', function (Request $request) {
+	 return UnidadeController::update($request,Session::get('Produto'));
+});
+
 Route::post('prestacao/public/CadCotacao/create', function () {
 	 return CotacaoController::create();
 });

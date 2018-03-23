@@ -27,25 +27,60 @@ class Funcionario extends Model
 	{
 		return $this->belongsTo('DRE'); 		
 	}
+	
 	//metodo cadastroFuncionario 
-	public static function cadastroFuncionario($dados)
-	{	//bloco de validações 
-		if(strlen($dados['nome'])>=5)
+	public static function cadastroFuncionario($dados,$id)
+	{	
+		\DB::beginTransaction();
+	
+		//bloco de validações 
+		if(strlen($dados['nome'])>=5 )
 		{
-			if(Validacao::validaCPF($dados['cpf'])== true) 
+			
+			if(Validacao::validaCPF($dados['cpf'],$id)== true || $id > 0) 
 			{	
 				Try
 				{
-				// atribuindo os dados nos atributos 
-				$funcionario = new Funcionario(); 
-				$funcionario->nome = $dados['nome']; 
-				$funcionario->cpf = $dados['cpf']; 
-				$funcionario->save(); //inserindo dados na base  
-				return IndexController::Message('success','Funcionario cadastrado com sucesso', 'prestacao/public/CadFuncionario');// mensagem ao usuario  
-				}catch(\Illuminate\Database\QueryException $e)
+					// atribuindo os dados nos atributos 
+				
+					if($id > 0)
+					{
+						$funcionario = Funcionario::find($id); 
+					}	
+					else
+					{
+						$funcionario =  new Funcionario;
+					}	
+					$funcionario->nome = $dados['nome']; 
+					$funcionario->cpf = $dados['cpf']; 
+					$funcionario->save(); //inserindo dados na base  
+					\DB::commit();
+					if($id > 0)
+					{
+						return IndexController::Message('success','Funcionario Alterado com sucesso', 'prestacao/public/CadFuncionario');// mensagem ao usuario  
+					}
+					else
+					{
+						return IndexController::Message('success','Funcionario Cadastrado com sucesso', 'prestacao/public/CadFuncionario');
+					}
+				}
+				catch(\Error $e)
 				{
+					
+					\DB::rollBack();
 					Session::put('dados', $dados);
 					Session::put('erro','6');
+					return IndexController::Message('alert',$e->getMessage(),'prestacao/public/CadFuncionario');
+				}
+				catch(\Throwable $e)
+				{
+					\DB::rollBack();
+					echo "<script>alert('".$e->getMessage()."')</script>";
+					Session::put('dados', $dados);//em caso de exce??o retorna dados
+					Session::put('erro','6');// erro 
+					//header('HTTP/1.1 500 Internal Server Booboo');
+					//header('Content-Type: application/json; charset=UTF-8');
+					//die(json_encode(array('message' => 'ERROR', 'code' => 1337)));
 					return IndexController::Message('alert',$e->getMessage(),'prestacao/public/CadFuncionario');
 				}
 			}else
@@ -132,136 +167,164 @@ class Funcionario extends Model
 						$html.="<td>".$fun->id."</td>";
 						$html.="<td>".$fun->nome."</td>";
 						$html.="<td>".$fun->cpf."</td>";
-						$html.="<td>Nada</td>";
+						$html.="<td><i class='fas fa-edit' onclick='edit(".$fun->id.")'></i></td>";
 						$html.="</tr>";
 					}
 					echo $html;
 				
 			}
-			
-
-		}
-			
-			
-	}
-	
-	public static function Page($id,$combo)
-	{
-		if($combo==0)
-		{
-			$combo = 1;
-		}
-		if(strlen($id)>0)
-		{
-			
-			$pagination=Funcionario::where('nome','like','%'.$id.'%')->orWhere('cpf','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->count();
-			$pagination/=10;
-		}
-		else
-		{
-			$pagination=Funcionario::count();
-			$pagination/=10;
-			
-		}
-		if($pagination > 10)
-		{
-
-			if($combo>=1 && $combo<=5)
-			{
-				$inicio=1;
-				$fim=10;
-			}
 			else
 			{
-				if($combo==ceil($pagination))
+				if($parameter=='page')
 				{
-					$inicio=ceil($pagination) - 9;
-					$fim=ceil($pagination);
-				}
-				else
-				{
-					if($combo<=ceil($pagination) && $combo>=ceil($pagination)-4)
+					if($combo==0)
 					{
-						
-						$fim=ceil($pagination);
-						$inicio=ceil($pagination)-9;
+						$combo = 1;
+					}
+					if(strlen($id)>0)
+					{
+						$pagination=Funcionario::where('nome','like','%'.$id.'%')->orWhere('cpf','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->count();
+						$pagination/=10;
 					}
 					else
 					{
-						$inicio=$combo-4;
-						$fim=$combo+5;
+						$pagination=Funcionario::count();
+						$pagination/=10;
+					}
+					if($pagination > 10)
+					{
+			
+						if($combo>=1 && $combo<=5)
+						{	
+							$inicio=1;
+							$fim=10;
+						}
+						else
+						{
+							if($combo==ceil($pagination))
+							{
+								$inicio=ceil($pagination) - 9;
+								$fim=ceil($pagination);
+							}
+							else
+							{
+								if($combo<=ceil($pagination) && $combo>=ceil($pagination)-4)
+								{
+								
+									$fim=ceil($pagination);
+									$inicio=ceil($pagination)-9;
+								}
+								else
+								{
+									$inicio=$combo-4;
+									$fim=$combo+5;
+								}
+						
+							}
+						}
+					
+					}
+					else
+					{
+						$inicio=1;
+						$fim=ceil($pagination);
+					}
+		
+					$html="<nav aria-label='Pagination'>";
+					$html.=" <ul class='pagination text-center'>";
+					if ($combo <=1)
+					{
+						$html.="<li class='pagination-first disabled'>Primeiro</li>";
+						$html.="<li class='pagination-previous disabled'>Anterior</li>";
+					}
+					else
+					{
+						$previous=$combo - 1;
+						$html.="<li class='pagination-first'><a href='#' onclick='loadFuncionarios(1)'>Primeiro</a></li>";
+						$html.="<li class='pagination-previous'><a href='#' onclick='loadFuncionarios(".$previous .")'>Anterior</a></li>";
+			
+			
+					}
+					for ($count=$inicio;$fim>=$inicio;$inicio++)
+					{		
+						if($pagination >0 && $pagination < 1)
+						{
+				
+							if($count==$combo)
+							{
+								$html.="<li class='current'><span class='show-for-sr'>You're on page</span>".$count."</li>";
+							}
+							else
+							{
+								$html.="<li><a href='#' aria-label='Page ".$count."' onclick='loadFuncionarios(".$count.")'>".$count."</a></li>";
+							}
+						
+						}
+						else
+						{
+							if($count==$combo)
+							{
+								$html.="<li class='current'><span class='show-for-sr'>You're on page</span>".$count."</li>";
+							}
+							else
+							{
+								$html.="<li><a href='#' aria-label='Page ".$count."' onclick='loadFuncionarios(".$count.")'>".$count."</a></li>";
+							}
+						}
+						$count++;
+					}
+					if ($combo >=$pagination)
+					{
+						$html.="<li class='pagination-next disabled'>Próximo</li>";
+						$html.="<li class='pagination-Last disabled'>Ultimo</li>";
+					}
+					else
+					{
+						$next=$combo + 1;
+						$html.="<li class='pagination-next'><a href='#' onclick='loadFuncionarios(".$next .")'>Próximo</a></li>";
+						$html.="<li class='pagination-last'><a href='#' onclick='loadFuncionarios(".ceil($pagination).")'>Ultimo</a></li>";
+					}
+					$html.=" </ul>";
+					$html.=" </nav>";
+					
+					echo $html;
+				}
+				else
+				{
+					if($parameter=='update')
+					{
+						$count=Funcionario::where('id',$id)->count();
+						if($count>0)
+						{
+							$dados=Funcionario::select('nome','cpf')->where('id','=',$id)->first();
+							$html="<div class='columns large-4'>";        
+							$html.="<label>Nome:";
+							$html.="<input type='text' name='nome' placeholder='Insira o Cpf 'value='".$dados->nome."'>";
+							$html.="</label><br>";
+							$html.="</div>";
+							$html.="<div class='columns large-4'>";
+							$html.="<label>CPF:";
+							$html.="<input type='text' name='cpf' class='CPF' placeholder='000.000.000-00' value='".$dados->cpf."'>";
+							$html.="</label><br>";
+							$html.="<p class='help-text' id='passwordHelpText'>use somente numeros neste campo.</p>";
+							$html.="</div>";
+							Session::put('Funcionario',$id);
+							echo $html;
+						}
+						else
+						{
+							//echo "<script>alert('erro');</script>";
+						}
 					}
 					
+					
 				}
-			}
 			
-		}
-		else
-		{
-			$inicio=1;
-			$fim=ceil($pagination);
-		}
-		
-		$html="<nav aria-label='Pagination'>";
-		$html.=" <ul class='pagination text-center'>";
-		if ($combo <=1)
-		{
-			$html.="<li class='pagination-first disabled'>Primeiro</li>";
-			$html.="<li class='pagination-previous disabled'>Anterior</li>";
-		}
-		else
-		{
-			$previous=$combo - 1;
-			$html.="<li class='pagination-first'><a href='#' onclick='loadFuncionarios(1)'>Primeiro</a></li>";
-			$html.="<li class='pagination-previous'><a href='#' onclick='loadFuncionarios(".$previous .")'>Anterior</a></li>";
-			
-			
-		}
-		for ($count=$inicio;$fim>=$inicio;$inicio++)
-		{		
-			if($pagination >0 && $pagination < 1)
-			{
-				
-				if($count==$combo)
-				{
-					$html.="<li class='current'><span class='show-for-sr'>You're on page</span>".$count."</li>";
-				}
-				else
-				{
-					$html.="<li><a href='#' aria-label='Page ".$count."' onclick='loadFuncionarios(".$count.")'>".$count."</a></li>";
-				}
-						
+
 			}
-			else
-			{
-				if($count==$combo)
-				{
-					$html.="<li class='current'><span class='show-for-sr'>You're on page</span>".$count."</li>";
-				}
-				else
-				{
-					$html.="<li><a href='#' aria-label='Page ".$count."' onclick='loadFuncionarios(".$count.")'>".$count."</a></li>";
-				}
-			}
-			$count++;
 		}
-		if ($combo >=$pagination)
-		{
-			$html.="<li class='pagination-next disabled'>Próximo</li>";
-			$html.="<li class='pagination-Last disabled'>Ultimo</li>";
-		}
-		else
-		{
-			$next=$combo + 1;
-			$html.="<li class='pagination-next'><a href='#' onclick='loadFuncionarios(".$next .")'>Próximo</a></li>";
-			$html.="<li class='pagination-last'><a href='#' onclick='loadFuncionarios(".ceil($pagination).")'>Ultimo</a></li>";
-		}
-		$html.=" </ul>";
-		$html.=" </nav>";
-		
-		echo $html;
-		
-		
+			
+	
 	}
 }
 		

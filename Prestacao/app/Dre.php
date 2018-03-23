@@ -23,111 +23,150 @@ class Dre extends Model
 	{
         return $this->belongsTo('App\Endereco');
     }
-	public static function cadastroDre($dados){//realiza cadastro da Dre
+	public static function cadastroDre($dados,$id)
+	{
+		//realiza cadastro da Dre
+		isset($dados['cep']) ==true ? $cep=$dados['cep'] : $cep="00000-000";
+		echo "<script>alert('ok');</script>";
 		if(strlen($dados['nome'])>=5)//verifica nome
 		{ 
-			if(Validacao::validaEmail($dados['email'])== true) //verifica email
+	
+			if(Validacao::validaEmail($dados['email'])== true || $id>0) //verifica email
 			{
-				if(Validacao::validaCEP($dados['cep'])== true) //verifica cep
+				
+				if(Validacao::validaCEP($cep)== true || $id>0) //verifica cep
 				{
 					if(strlen($dados['telefone'])>=14 && strlen($dados['telefone'])<=15)//verifica telefone
 					{	
 						
-							Try
-							{
-								if(Validacao::validaCadastroEmpresa($dados,2) ==true)//valida se o cadastro n?o est? incluso na base
-								{	
-										\DB::beginTransaction();
-										$dre = new Dre();//instancia DRE
-										$dre->nome = $dados['nome'];//seta variaveis
-										$dre->telefone = $dados['telefone'];
-										$dre->email = $dados['email']; 
-										$dre->codEndereco = Endereco::cadastraEndereco($dados);
-										$dre->save();//insere na base
-										\DB::commit();				
-										return IndexController::Message('success','DRE Cadastrada com sucesso','prestacao/public/CadDre'); //retorna mensagem de sucess
+						Try
+						{
+							if(Validacao::validaCadastroEmpresa($dados,2) ==true || $id>0)//valida se o cadastro n?o est? incluso na base
+							{	
+								DB::beginTransaction();
+								if($id > 0 )
+								{
+									$dre = Dre::find($id); 
+								}
+								else
+								{
+									$dre = new Dre();//instancia DRE
+								}
+										
+								$dre->nome = $dados['nome'];//seta variaveis
+								$dre->telefone = $dados['telefone'];
+								$dre->email = $dados['email']; 
+										
+								if($id == 0)
+								$dre->codEndereco = Endereco::cadastraEndereco($dados);
+									
+								$dre->save();//insere na base
+								\DB::commit();	
+
+								if($id >0)
+								{
+									http_response_code(200);
+									return IndexController::Message('success','DRE Alterada com sucesso','prestacao/public/CadDre'); //retorna mensagem de sucess
 								}else
 								{
-									return IndexController::Message('alert','DRE já cadastrada ','prestacao/public/CadDre'); //retorna que a Dre Foi j? esta cadastrada
+									http_response_code(200);
+									return IndexController::Message('success','DRE Cadastrada com sucesso','prestacao/public/CadDre'); //retorna mensagem de sucess
 								}
-							}catch (\Illuminate\Database\QueryException $e)
+								
+							}else
 							{
-								\DB::rollBack();
-								Session::put('dados', $dados);//em caso de exce??o retorna dados
-								Session::put('erro','6');// erro 
-								return IndexController::Message('alert',$e->getMessage(),'prestacao/public/CadDre');
-								
-								
-								if(strpos($e->getMessage(),'SQLSTATE[23000]')!==false) // duplica??o de dados
-								{
-									Session::put('dados', $dados);
-									Session::put('erro','6');
-									return IndexController::Message('alert',$e->getMessage(),'prestacao/public/CadDre');
-									
-								}
+								return IndexController::Message('alert','DRE já cadastrada ','prestacao/public/CadDre'); //retorna que a Dre Foi j? esta cadastrada
 							}
-					}else
+						}catch (\Illuminate\Database\QueryException $e)
 						{
-							//erro no telefone
-							Session::put('dados', $dados);
-							Session::put('erro','4');
-							return IndexController::Message('alert','erro no telefone','prestacao/public/CadDre'); 
-						}	
-				}else
+							\DB::rollBack();
+							http_response_code(500);
+							Session::put('dados', $dados);//em caso de exce??o retorna dados
+							Session::put('erro','6');// erro 
+							return IndexController::Message('alert',$e->getMessage(),'prestacao/public/CadDre');
+								
+								
+							if(strpos($e->getMessage(),'SQLSTATE[23000]')!==false) // duplica??o de dados
+							{
+								http_response_code(204);
+								Session::put('dados', $dados);
+								Session::put('erro','6');
+								return IndexController::Message('alert',$e->getMessage(),'prestacao/public/CadDre');
+									
+							}
+						}
+					}else
 					{
-						//erro no cep
+						//erro no telefone
+						http_response_code(204);
 						Session::put('dados', $dados);
-						Session::put('erro','3');
-						return IndexController::Message('alert','erro cep ','prestacao/public/CadDre'); 
-					}
+						Session::put('erro','4');
+						return IndexController::Message('alert','erro no telefone','prestacao/public/CadDre'); 
+					}	
+				}else
+				{
+					//erro no cep
+					http_response_code(204);
+					Session::put('dados', $dados);
+					Session::put('erro','3');
+					return IndexController::Message('alert','erro cep ','prestacao/public/CadDre'); 
+				}
 			
 			}else
-				{
-					//erro no email
-					Session::put('dados', $dados);
-					Session::put('erro','2');
-					return IndexController::Message('alert','erro email ','prestacao/public/CadDre'); 
-				}
-		
-		}else{
-				//erro no nome
-					Session::put('dados', $dados);
-					Session::put('erro','1');
-					return IndexController::Message('alert','erro nome DRE  ','prestacao/public/CadDre'); 
+			{
+				//erro no email
+				http_response_code(204);
+				Session::put('dados', $dados);
+				Session::put('erro','2');
+				return IndexController::Message('alert','erro email ','prestacao/public/CadDre'); 
 			}
+		
+		}else
+		{
+			//erro no nome
+			http_response_code(204);
+			Session::put('dados', $dados);
+			Session::put('erro','1');
+			return IndexController::Message('alert','erro nome DRE  ','prestacao/public/CadDre'); 
+		}
 	}
 	
-	//FINALIZAR METODO PARA GRID
-	
-	public static function visualizaDados($combo)//transforma a base em html
+	public static function visualizaDados($id,$parameter,$combo)
 	{
-		$count=0;
-		$dre=Dre::all();
-				
-	$combo == $count ? $html='<option value="0" selected>Selecione...</option>' : $html='<option value="0">Selecione...</option>';
-		
-		
-		if($combo != null)
+		if ($parameter=='combo')
 		{
-			foreach ($dre as $dre) 
+		
+			$count=0;
+			$dre=Dre::all();
+					
+			$combo == $count ? $html='<option value="0" selected>Selecione...</option>' : $html='<option value="0">Selecione...</option>';
+		
+		
+			if($combo != null)
 			{
-				$count++;
-				
-				$combo == $count ? $html.='<option value="'.$dre->id.'" selected>'.$dre->nome.'</option>' : $html.='<option value="'.$dre->id.'">'.$dre->nome.'</option>';;
-				
+				foreach ($dre as $dre) 
+				{
+					$count++;
+					
+					$combo == $count ? $html.='<option value="'.$dre->id.'" selected>'.$dre->nome.'</option>' : $html.='<option value="'.$dre->id.'">'.$dre->nome.'</option>';;
+					
+				}
 			}
+			else
+			{
+				foreach ($dre as $dre) 
+				{
+					$html.='<option value="'.$dre->id.'">'.$dre->nome.'</option>';;
+				}
+
+			}
+			
+			echo $html;
+			
 		}
 		else
 		{
-			foreach ($dre as $dre) 
-			{
-				$html.='<option value="'.$dre->id.'">'.$dre->nome.'</option>';;
-			}
-
-		}
-		echo $html;
-		
-	}if($parameter=='table')
+			if($parameter=='table')
 			{
 				if(strlen($id)<=0)
 				{
@@ -147,147 +186,180 @@ class Dre extends Model
 					$final=$combo*10;
 					$offset=($combo-1)*10;
 					$inicio=$final - 9;
-					$dre=Dre::where('nome','like','%'.$id.'%')->orWhere('codTipoProduto','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->limit(10)->offset($offset)->get();
+					$dre=Dre::where('nome','like','%'.$id.'%')->orWhere('telefone','like','%'.$id.'%')->orWhere('email','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->limit(10)->offset($offset)->get();
 					
 				}
 				
 				$html="";
-					foreach ($produto as $fun) 
-					{
-						$html.="<tr>";
-						$html.="<td>".$fun->id."</td>";
-						$html.="<td>".$fun->nome."</td>";
-						$html.="<td>".$fun->cpf."</td>";
-						$html.="<td>Nada</td>";
-						$html.="</tr>";
-					}
+				foreach ($dre as $dre) 
+				{
+					$html.="<tr>";
+					$html.="<td>".$dre->id."</td>";
+					$html.="<td>".$dre->nome."</td>";
+					$html.="<td>".$dre->telefone."</td>";
+					$html.="<td>".$dre->email."</td>";
+					$html.="<td>".$dre->codEndereco."</td>";
+					$html.="<td><i class='fas fa-edit' onclick='edit(".$dre->id.")'></i></td>";
+					$html.="</tr>";
+				}
 					echo $html;
 				
 			}
-			
-
-		}
-			
-			
-	}
-	
-	public static function Page($id,$combo)
-	{
-
-		if($combo==0)
-		{
-			$combo = 1;
-		}
-		if(strlen($id)>0)
-		{
-			
-			$pagination=Produto::where('nome','like','%'.$id.'%')->orWhere('codTipoProduto','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->count();
-			$pagination/=10;
-		}
-		else
-		{
-			$pagination=Produto::count();
-			$pagination/=10;
-		}
-		if($pagination > 10)
-		{
-			if($combo>=1 && $combo<=5)
-			{
-				$inicio=1;
-				$fim=10;
-			}
 			else
 			{
-				if($combo==ceil($pagination))
+				if($parameter=='page')
 				{
-					$inicio=ceil($pagination) - 9;
-					$fim=ceil($pagination);
-				}
-				else
-				{
-					if($combo<=ceil($pagination) && $combo>=ceil($pagination)-4)
+					if($combo==0)
 					{
-						
-						$fim=ceil($pagination);
-						$inicio=ceil($pagination)-9;
+						$combo = 1;
+					}
+					if(strlen($id)>0)
+					{	
+						$pagination=Dre::where('nome','like','%'.$id.'%')->orWhere('telefone','like','%'.$id.'%')->orWhere('email','like','%'.$id.'%')->orWhere('id','like','%'.$id.'%')->count();
+						$pagination/=10;
 					}
 					else
 					{
-						$inicio=$combo-4;
-						$fim=$combo+5;
+						$pagination=Dre::count();
+						$pagination/=10;	
+					}
+					if($pagination > 10)
+					{
+						if($combo>=1 && $combo<=5)		
+						{	
+							$inicio=1;
+							$fim=10;
+						}
+						else
+						{
+							if($combo==ceil($pagination))
+							{
+								$inicio=ceil($pagination) - 9;
+								$fim=ceil($pagination);
+							}
+							else
+							{
+								if($combo<=ceil($pagination) && $combo>=ceil($pagination)-4)
+								{
+								
+									$fim=ceil($pagination);
+									$inicio=ceil($pagination)-9;
+								}
+								else
+								{
+									$inicio=$combo-4;
+									$fim=$combo+5;
+								}
+						
+							}
+						}
+					
+					}
+					else
+					{
+						$inicio=1;
+						$fim=ceil($pagination);
+					}
+		
+					$html="<nav aria-label='Pagination'>";
+					$html.=" <ul class='pagination text-center'>";
+					if ($combo <=1)
+					{
+						$html.="<li class='pagination-first disabled'>Primeiro</li>";
+						$html.="<li class='pagination-previous disabled'>Anterior</li>";
+					}
+					else
+					{
+						$previous=$combo - 1;
+						$html.="<li class='pagination-first'><a href='#' onclick='loadFuncionarios(1)'>Primeiro</a></li>";
+						$html.="<li class='pagination-previous'><a href='#' onclick='loadFuncionarios(".$previous .")'>Anterior</a></li>";
+			
+			
+					}
+					for ($count=$inicio;$fim>=$inicio;$inicio++)
+					{		
+						if($pagination >0 && $pagination < 1)
+						{
+							if($count==$combo)
+							{
+								$html.="<li class='current'><span class='show-for-sr'>You're on page</span>".$count."</li>";
+							}
+							else
+							{
+								$html.="<li><a href='#' aria-label='Page ".$count."' onclick='loadFuncionarios(".$count.")'>".$count."</a></li>";
+							}
+						
+						}
+						else
+						{
+							if($count==$combo)
+							{
+								$html.="<li class='current'><span class='show-for-sr'>You're on page</span>".$count."</li>";
+							}
+							else
+							{
+								$html.="<li><a href='#' aria-label='Page ".$count."' onclick='loadFuncionarios(".$count.")'>".$count."</a></li>";
+							}
+						}
+						$count++;
+					}
+					if ($combo >=$pagination)
+					{
+						$html.="<li class='pagination-next disabled'>Pr?ximo</li>";
+						$html.="<li class='pagination-Last disabled'>Ultimo</li>";
+					}
+					else
+					{
+						$next=$combo + 1;
+						$html.="<li class='pagination-next'><a href='#' onclick='loadFuncionarios(".$next .")'>Pr?ximo</a></li>";
+						$html.="<li class='pagination-last'><a href='#' onclick='loadFuncionarios(".ceil($pagination).")'>Ultimo</a></li>";
+					}
+					$html.=" </ul>";
+					$html.=" </nav>";
+					
+					echo $html;
+				}
+				else
+				{
+					if($parameter=='update')
+					{
+						$count=Dre::where('id',$id)->count();
+						if($count>0)
+						{
+							$dados=Dre::select('nome','telefone','email')->where('id','=',$id)->first();
+							$html="<div class='columns large-4'>";        
+							$html.="<label>Nome:";
+							$html.="<input type='text' name='nome' placeholder='Insira o nome 'value='".$dados->nome."'>";
+							$html.="</label><br>";
+							$html.="</div>";
+							$html.="<div class='columns large-4'>";
+							$html.="<label>Telefone:";
+							$html.="<input type='text' name='telefone' class='Telefone' placeholder='(00) 0000-0000' value='".$dados->telefone."'>";
+							$html.="</label><br>";
+							$html.="</div>";
+							$html.="<div class='columns large-4'>";        
+							$html.="<label>Email:";
+							$html.="<input type='email' name='email' placeholder='Insira o email 'value='".$dados->email."'>";
+							$html.="</label><br>";
+							$html.="</div>";
+							Session::put('Dre',$id);
+							echo $html;
+						}
+						else
+						{
+							echo "<script>alert('erro');</script>";
+						}
 					}
 					
+					
 				}
-			}
 			
-		}
-		else
-		{
 
-			$inicio=1;
-			$fim=ceil($pagination);
-		}
-		
-		$html="<nav aria-label='Pagination'>";
-		$html.=" <ul class='pagination text-center'>";
-		if ($combo <=1)
-		{
-			$html.="<li class='pagination-first disabled'>Primeiro</li>";
-			$html.="<li class='pagination-previous disabled'>Anterior</li>";
-		}
-		else
-		{
-			$previous=$combo - 1;
-			$html.="<li class='pagination-first'><a href='#' onclick='loadProdutos(1)'>Primeiro</a></li>";
-			$html.="<li class='pagination-previous'><a href='#' onclick='loadProdutos(".$previous .")'>Anterior</a></li>";
-			
-			
-		}
-		for ($count=$inicio;$fim>=$inicio;$inicio++)
-		{		
-			if($pagination >0 && $pagination < 1)
-			{
-				
-				if($count==$combo)
-				{
-					$html.="<li class='current'><span class='show-for-sr'>You're on page</span>".$count."</li>";
-				}
-				else
-				{
-					$html.="<li><a href='#' aria-label='Page ".$count."' onclick='loadProdutos(".$count.")'>".$count."</a></li>";
-				}
-						
 			}
-			else
-			{
-				if($count==$combo)
-				{
-					$html.="<li class='current'><span class='show-for-sr'>You're on page</span>".$count."</li>";
-				}
-				else
-				{
-					$html.="<li><a href='#' aria-label='Page ".$count."' onclick='loadProdutos(".$count.")'>".$count."</a></li>";
-				}
-			}
-			$count++;
 		}
-		if ($combo >=$pagination)
-		{
-			$html.="<li class='pagination-next disabled'>Pr?ximo</li>";
-			$html.="<li class='pagination-Last disabled'>Ultimo</li>";
-		}
-		else
-		{
-			$next=$combo + 1;
-			$html.="<li class='pagination-next'><a href='#' onclick='loadProdutos(".$next .")'>Pr?ximo</a></li>";
-			$html.="<li class='pagination-last'><a href='#' onclick='loadProdutos(".ceil($pagination).")'>Ultimo</a></li>";
-		}
-		$html.=" </ul>";
-		$html.=" </nav>";
-		
-		echo $html;
-		
-		
+			
+	
 	}
-}
+	
+	
 }

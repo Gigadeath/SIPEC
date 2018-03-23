@@ -24,51 +24,48 @@ class ProdutosNota extends Model
     }
 	
 	public static function cadastraProdutosNota($dados,$id)
-	{	\DB::beginTransaction();
+	{	
+		\DB::beginTransaction();
 		for($count =0;isset($dados['produto'][$count])==true;$count++)
 		{
-				$produto = Produto::where('id',$dados['produto'][$count])->count();
-				$medida=Medida::where('id',$dados['codMedida'][$count])->count();
-					if($produto > 0)
+			$produto = Produto::where('id',$dados['produto'][$count])->count();
+			$medida=Medida::where('id',$dados['codMedida'][$count])->count();
+			if($produto > 0)
+			{
+				if($medida >0) 
+				{	
+					Try
 					{
-							if($medida >0) 
-							{	
-								Try
-								{
-									// atribuindo os dados nos atributos 
-									
-									$produtosnota = new ProdutosNota(); 
-									$produtosnota->codNota = $id;
-									$codProduto = Produto::find($dados['produto'][$count])->id;
-									$produtosnota->Produto()->associate($codProduto);
-									$codMedida=Medida::find($dados['produto'][$count])->id;
-									$produtosnota->Medida()->associate($codMedida);
-									$produtosnota->qtde = $dados['qtde'][$count];
-									$produtosnota->valorUnit= $dados['valorunit'][$count];
-									$produtosnota->save();
-									
-								}catch(\Error $e)
-								{
-									\DB::rollBack();
-									return false;
-								}
-								
-								catch(Throwable $e) 
-								{
-									\DB::rollBack();
-									return false;
-								}
-							}else
-							{
-								\DB::rollBack();
-								return false;
-							}
-					} else
+						// atribuindo os dados nos atributos 					
+						$produtosnota = new ProdutosNota(); 
+						$produtosnota->codNota = $id;
+						$codProduto = Produto::find($dados['produto'][$count])->id;
+						$produtosnota->Produto()->associate($codProduto);
+						$codMedida=Medida::find($dados['produto'][$count])->id;
+						$produtosnota->Medida()->associate($codMedida);
+						$produtosnota->qtde = $dados['qtde'][$count];
+						$produtosnota->valorUnit= $dados['valorunit'][$count];
+						$produtosnota->save();
+					}catch(\Error $e)
 					{
-					
+						\DB::rollBack();
+						return false;
+					}			
+					catch(Throwable $e) 
+					{
 						\DB::rollBack();
 						return false;
 					}
+				}else
+				{
+					\DB::rollBack();
+					return false;
+				}
+			} else
+			{		
+				\DB::rollBack();
+				return false;
+			}
 	
 		}
 		\DB::commit();

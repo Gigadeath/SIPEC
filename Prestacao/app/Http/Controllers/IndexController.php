@@ -11,7 +11,6 @@ class IndexController extends Controller
 	public static  function index($id) // retorna a principal
     {
 		Session::put('id', $id);
-
         return view('index');
     }
 	public static function getFooter()// retorna o rodapé
@@ -27,7 +26,6 @@ class IndexController extends Controller
 		if (Session::has('id')==true && Session::get('id') >0)
 		{
 			$sub_link = str_replace("/".Session::get('id'),"",$sub_link);
-
 			switch($sub_link)
 			{
 				case "ConLancamento":
@@ -42,82 +40,82 @@ class IndexController extends Controller
 		else
 		{
 		
-		switch($sub_link)//verfica qual menu o usuário está e retorna qual item qual item deverá ficar colorido
-		{
-			case "sipec":
-				return view('menu')->with('active','1');
+			switch($sub_link)//verfica qual menu o usuário está e retorna qual item qual item deverá ficar colorido
+			{
+				case "sipec":
+					return view('menu')->with('active','1');
 				break;
-			case "CadFuncionario":
-				return view('menu')->with('active','2');
+				case "CadFuncionario":
+					return view('menu')->with('active','2');
 				break;
-			case "CadMantenedora":
-				return view('menu')->with('active','3');
+				case "CadMantenedora":
+					return view('menu')->with('active','3');
 				break;
-			case "CadDre":
-				return view('menu')->with('active','4');
+				case "CadDre":
+					return view('menu')->with('active','4');
 				break;
-			case "CadUnidade":
-				return view('menu')->with('active','5');
+				case "CadUnidade":
+					return view('menu')->with('active','5');
 				break;
-			case "CadLancamento":
-				return view('menu')->with('active','6');
+				case "CadLancamento":
+					return view('menu')->with('active','6');
 				break;
-			case "CadFornecedor":
-				return view('menu')->with('active','7');
+				case "CadFornecedor":
+					return view('menu')->with('active','7');
 				break;
-			case "CadProduto":
-				return view('menu')->with('active','8');
+				case "CadProduto":
+					return view('menu')->with('active','8');
 				break;
-			case "CadCotacao":
-				return view('menu')->with('active','9');
+				case "CadCotacao":
+					return view('menu')->with('active','9');
 				break;
-			case "CadNota":
-				return view('menu')->with('active','10');
+				case "CadNota":
+					return view('menu')->with('active','10');
 				break;
-			case "ConFuncionario":
-				return view('menu')->with('active','11');
+				case "ConFuncionario":
+					return view('menu')->with('active','11');
 				break;
-			case "ConMantenedora":
-				return view('menu')->with('active','12');
+				case "ConMantenedora":
+					return view('menu')->with('active','12');
 				break;
-			case "ConDre":
-				return view('menu')->with('active','13');
+				case "ConDre":
+					return view('menu')->with('active','13');
 				break;
-			case "ConUnidade":
-				return view('menu')->with('active','14');
+				case "ConUnidade":
+					return view('menu')->with('active','14');
 				break;
-			case "ConLancamento":
-				return view('menu')->with('active','15');
+				case "ConLancamento":
+					return view('menu')->with('active','15');
 				break;
-			case "ConFornecedor":
-				return view('menu')->with('active','16');
+				case "ConFornecedor":
+					return view('menu')->with('active','16');
 				break;
-			case "ConProduto":
-				return view('menu')->with('active','17');
+				case "ConProduto":
+					return view('menu')->with('active','17');
 				break;
-			case "ConCotacao":
-				return view('menu')->with('active','18');
+				case "ConCotacao":
+					return view('menu')->with('active','18');
 				break;
-			case "ConNota":
-				return view('menu')->with('active','19');
+				case "ConNota":
+					return view('menu')->with('active','19');
 				break;
-			case "RelatorioAliRe":
-				return view('menu')->with('active','20');
+				case "RelatorioAliRe":
+					return view('menu')->with('active','20');
 				break;
-			case "RelatorioJustificativa":
-				return view('menu')->with('active','21');
+				case "RelatorioJustificativa":
+					return view('menu')->with('active','21');
 				break;
-			case "RelatorioLancamento":
-				return view('menu')->with('active','22');
+				case "RelatorioLancamento":
+					return view('menu')->with('active','22');
 				break;
-			default:
-				return "404 NOT FOUND" ;
+				default:
 				break;
+			}
 		}
-	}
 		
-}
-   public static function getContent()//retorna o conteudo da pagina
+	}
+	
+	public static function getContent()//retorna o conteudo da pagina
     {
 		//pega a url
         $actual_link = "$_SERVER[REQUEST_URI]";
@@ -136,95 +134,85 @@ class IndexController extends Controller
 				case "CadNota":
 					return view('cadastroNotaFiscal');
 				break;
-				
-				
 			}
-			
-			
-			
-			
 		}
 		else
 		{
-		
 			//verifica a qual pagina o link pertence
 			switch($sub_link)
 			{
 				case "login":
 					return view('login');
-					break;
+				break;
 				case "sipec":
 					return view('content');
-					break;
+				break;
 				case "CadFuncionario":
 					return view('CadastroFuncionario');
-					break;
+				break;
 				case "CadMantenedora":
 					return view('CadastroMantenedor');
-					break;
+				break;
 				case "CadDre":
 					return view('CadastroDRE');
-					break;
+				break;
 				case "CadUnidade":
 					return view('CadastroUnidades');
-					break;
+				break;
 				case "CadLancamento":
 					return view('CadastroLancamentos');
-					break;
+				break;
 				case "CadFornecedor":
 					return view('CadastroFornecedor');
-					break;
+				break;
 				case "CadProduto":
 					return view('CadastroProduto');
-					break;
+				break;
 				case "CadCotacao":
 					return view('cadastroCotacao');
-					break;
+				break;
 				case "CadNota":
 					return view('CadastroNotaFiscal');
-					break;
+				break;
 				case "ConFuncionario":
 					return view('consultaFuncionario');
-					break;
+				break;
 				case "ConMantenedora":
 					return view('consultaMantenedor');
-					break;
+				break;
 				case "ConDre":
 					return view('consultaDRE');
-					break;
+				break;
 				case "ConUnidade":
 					return view('consultaUnidades');
-					break;
+				break;
 				case "ConLancamento":
 					return view('selecionaLancamento');
-					break;
+				break;
 				case "ConFornecedor":
 					return view('consultaFornecedor');
-					break;
+				break;
 				case "ConProduto":
 					return view('consultaProduto');
-					break;
+				break;
 				case "ConCotacao":
 					return view('consultaCotacao');
-					break;
+				break;
 				case "ConNota":
 					return view('consultaNotaFiscal');
-					break;
+				break;
 				case "RelatorioAliRe":
 					return view('RelatorioAlimRestritos');
-					break;
+				break;
 				case "RelatorioJustificativa":
 					return view('RelatorioJustificativa');
-					break;
+				break;
 				case "RelatorioLancamento":
 					return view('RelatorioLancamento');
-					break;
+				break;
 				default:
-					return "404 NOT FOUND";
-					break;
+				break;
 			}
-		
-		
 		}
 	}
 	

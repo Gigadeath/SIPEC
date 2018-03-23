@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Produto;
+use Illuminate\Support\Facades\Session;
+
 class ProdutoController extends Controller
 {
     //
@@ -11,48 +13,64 @@ class ProdutoController extends Controller
         
     }
    
-    public static function create()//cadastro do Produto
+    public static function create(Request $request)//cadastro do Produto
     {
 		
-       return Produto::cadastroProduto($_POST,true); //envia Post para a classe produto no metodo cadastroProduto
+      if ($request->ajax())
+		{
+			return Produto::cadastroProduto($request->all(),null); 
+		}
     }
     
     public static function store()
     {
-        return Produto::cadastroProduto($_POST,true);
+        
     }
     
-	 public static function show($id,$parameter,$combo)
+	 public static function show(Request $request,$id,$parameter,$combo)
     {
-       if ($parameter=='combo')
-	   {
-		   return Produto::visualizaDados($id,$parameter,$combo);
-	   }
-	   else
-	   {
-			
-			if ($parameter=='table')
+		if ($request->ajax())
+		{
+			if ($parameter=='combo')
 			{
 				return Produto::visualizaDados($id,$parameter,$combo);
 			}
 			else
 			{
-				if($parameter=='page')
-				{
-					return Produto::Page($id,$combo);
-				}
+					if ($parameter=='table')
+					{
+						return Produto::visualizaDados($id,$parameter,$combo);
+					}
+					else
+					{
+						if($parameter=='page')
+						{
+							return Produto::visualizaDados($id,$parameter,$combo);
+						}
+						else
+						{
+							if($parameter=='update')
+							{
+								return Produto::visualizaDados($id,$parameter,$combo);
+							}
+						}
+					}
 			}
-	   }
-    }
+		}
+	}
     
     public function edit($id)
     {
         //
     }
     
-    public function update($id)
+    public static function update(Request $request,$id)
     {
-        //
+		if ($request->ajax())
+		{
+			Session::forget('Produto');
+			return Produto::cadastroProduto($request->all(),$id);
+		}
     }
    
     public function destroy($id)

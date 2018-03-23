@@ -34,7 +34,6 @@ class Endereco extends Model
 		$endereco->bairro=$dados['bairro'];
 		$endereco->ibge=$dados['ibge'];
 		$endereco->save();
-		
 		return $endereco->id;
 		
 		
